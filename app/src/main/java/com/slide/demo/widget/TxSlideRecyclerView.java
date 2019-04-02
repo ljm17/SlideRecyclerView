@@ -20,7 +20,7 @@ import android.widget.Scroller;
 public class TxSlideRecyclerView extends RecyclerView{
 
     /**最小速度*/
-    private static final int SNAP_VELOCITY = 600;
+    private static final int MINIMUM_VELOCITY = 500;
 
     /**滑动的itemView*/
     private ViewGroup mMoveView;
@@ -111,7 +111,7 @@ public class TxSlideRecyclerView extends RecyclerView{
                 //1、水平速度大于竖直速度,且水平速度大于最小速度
                 //2、水平位移大于竖直位移,且大于最小移动距离
                 //必需条件：itemView菜单栏宽度大于0，且recyclerView处于静止状态（即并不在竖直滑动）
-                boolean isHorizontalMove = (Math.abs(velocityX) >= SNAP_VELOCITY && velocityX > velocityY || moveX > moveY
+                boolean isHorizontalMove = (Math.abs(velocityX) >= MINIMUM_VELOCITY && velocityX > velocityY || moveX > moveY
                         && moveX > mTouchSlop) && mMenuWidth > 0 && getScrollState() == 0;
                 if (isHorizontalMove){
                     mIntercepted = true;
@@ -150,7 +150,7 @@ public class TxSlideRecyclerView extends RecyclerView{
                 int moveY = Math.abs(y - mFirstY);
                 //若为onInterceptTouchEvent()方法拦截而来或者已处于水平滑动状态，则让itemView跟随手指滑动
                 //或根据水平滑动条件判断，是否让itemView跟随手指滑动（这里重新判断是避免itemView中不拦截ACTION_DOWN事件，则后续ACTION_MOVE并不会走若为onInterceptTouchEvent（）方法）
-                boolean isHorizontalMove = mIntercepted || mMoving || (Math.abs(velocityX) >= SNAP_VELOCITY && velocityX > velocityY
+                boolean isHorizontalMove = mIntercepted || mMoving || (Math.abs(velocityX) >= MINIMUM_VELOCITY && velocityX > velocityY
                         || moveX > moveY && moveX > mTouchSlop) && mMenuWidth > 0 && getScrollState() == 0;
                 if (isHorizontalMove){
                     int dx = mLastX - x;
@@ -173,9 +173,9 @@ public class TxSlideRecyclerView extends RecyclerView{
                     int scrollX = mMoveView.getScrollX();
                     //若速度大于正方向最小速度，则关闭菜单栏；若速度小于反方向最小速度，则打开菜单栏
                     //若速度没到判断条件，则对菜单显示的宽度进行判断打开/关闭菜单
-                    if (mVelocity.getXVelocity() >= SNAP_VELOCITY){
+                    if (mVelocity.getXVelocity() >= MINIMUM_VELOCITY){
                         mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(scrollX));
-                    }else if (mVelocity.getXVelocity() < -SNAP_VELOCITY){
+                    }else if (mVelocity.getXVelocity() < -MINIMUM_VELOCITY){
                         int dx = mMenuWidth - scrollX;
                         mScroller.startScroll(scrollX, 0, dx, 0, Math.abs(dx));
                     } else if (scrollX > mMenuWidth / 2) {
